@@ -6,7 +6,7 @@
 
 ## Struktogramm
 
-Tool: [Struktogrammeditor](whiledo.de/index.php?p=struktogrammeditor)
+Tool: [Struktogrammeditor](http://whiledo.de/index.php?p=struktogrammeditor)
 
 Run
 

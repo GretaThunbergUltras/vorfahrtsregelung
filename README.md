@@ -22,3 +22,6 @@ Run
 ``` powershell
 java -jar struktogrammeditor*.jar
 ```
+## Nuetzliche Links
+
+Bildauswertungs Library: https://opencv.org/

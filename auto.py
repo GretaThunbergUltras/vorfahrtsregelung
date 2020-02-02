@@ -33,7 +33,7 @@ class Vorfahrt:
 
         def follow():
             for improve in linetracker:
-                if improve:
+                if improve != None:
                     self._bot.drive_steer(improve)
                     # TODO: is this needed
                     sleep(0.1)

@@ -11,6 +11,7 @@ class Vorfahrt:
 
     def __init__(self):
         self._bot = Bot()
+        self._bot.calibrate()
 
     def sensor_in_range(self, sensor, vmin, vmax):
         return vmin < self._bot.sonar().read(sensor) < vmax

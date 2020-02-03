@@ -17,7 +17,7 @@ class Vorfahrt:
 
     def sensor_in_range(self, sensor, vmin, vmax):
         vals = [self._bot.sonar().read(sensor) for _ in range(self.COLLECT_TIMES)]
-        no_err_vals = filter(lambda x: x != None, vals)
+        no_err_vals = list(filter(lambda x: x != None, vals))
         median = sum(no_err_vals) / float(len(no_err_vals))
         print('sensor', sensor, vals, median)
         return vmin < median < vmax

@@ -8,8 +8,6 @@ Dieses Projekt baut auf der [botlib](https://github.com/GretaThunbergUltras/botl
 
 - Linien auf dem Boden halten das Auto in der Spur
 
-![Kreuzungsdiagramm](docs/kreuzung.svg)
-
 ## Struktogramm
 
 ![Struktogramm](docs/struktogramm.png)

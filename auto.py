@@ -41,6 +41,17 @@ class Vorfahrt:
         thread = Thread(group=None, target=follow, daemon=True)
         thread.start()
 
+    def at_crossing(self):
+        self._bot.drive_power(0)
+
+        # Warten bis die Kreuzung frei ist
+        self.wait_till_front_free()
+
+        # Nochmal rechts gucken ob ein zweites Auto nachkommt
+        while not self.is_right_free():
+            # Wieder warten bis die Kreuzung frei ist
+            self.wait_till_front_free()
+
     def run(self):
         # Ein neuer Thread kümmert sich darum, dass das Auto
         # der Linie folgt
@@ -49,30 +60,22 @@ class Vorfahrt:
         # Solange wir keine Kreuzungslinie erkannt haben
         # fahren wir weiter
         self._bot.drive_power(self.DEFAULT_POWER)
-        
-        # Kreuzungslinie erkannt
+
+        while True:
+            # Haben wir ein Auto beim Fahren gesehen?
+            if not self.is_right_free():
+                self.at_crossing()
+
         # Geschwindigkeit verringern
-        self._bot.drive_power(self.APPROACH_POWER)
+        # self._bot.drive_power(self.APPROACH_POWER)
         
         # Wurde ein Auto während des Annährens an 
         # die Kreuzung erkannt
-        car_detected = False
-
-        # Solange wir keine Stoplinie erkannt haben
-        # Stoplinie erkannt
+        # car_detected = False
 
         # Haben wir ein Auto während des Annährens gesehen?
-        if car_detected:
+        # if car_detected:
             # Wenn Ja, anhalten
-            self._bot.drive_power(0)
-
-            # Warten bis die Kreuzung frei ist
-            self.wait_till_front_free()
-
-            # Nochmal rechts gucken ob ein zweites Auto nachkommt
-            while not self.is_right_free():
-                # Wieder warten bis die Kreuzung frei ist
-                self.wait_till_front_free()
         
         # Weiterfahren
         self._bot.drive_power(self.DEFAULT_POWER)

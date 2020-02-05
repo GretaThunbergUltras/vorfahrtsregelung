@@ -102,8 +102,8 @@ class Vorfahrt:
             input('stop?')
         except KeyboardInterrupt:
             pass
-        finally:
-            self._bot.stop_all()
+
+        self._bot.stop_all()
 
 if __name__ == '__main__':
     Vorfahrt().run()

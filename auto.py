@@ -5,10 +5,10 @@ from botlib.sonar import Sonar
 from time import sleep
 
 class Vorfahrt:
-    APPROACH_POWER, DEFAULT_POWER = 30, 30
-    RIGHT_MIN, RIGHT_MAX = 20, 40
+    APPROACH_POWER, DEFAULT_POWER = 40, 40
+    RIGHT_MIN, RIGHT_MAX = 10, 40
     FRONT_MIN, FRONT_MAX = 0, 30
-    COLLECT_TIMES = 5
+    COLLECT_TIMES = 2
 
     def __init__(self):
         self._bot = Bot()
@@ -39,24 +39,6 @@ class Vorfahrt:
             left = self.is_front_free(Sonar.LEFT_FRONT)
             sleep(0.1)
 
-    def follow_line(self):
-        from multiprocessing import Process
-
-        linetracker = self._bot.linetracker()
-        self._track_paused = False
-
-        def follow():
-            for improve in linetracker:
-                if improve != None:
-                    self._bot.drive_steer(improve)
-                    # TODO: is this needed
-                    sleep(0.1)
-                while self._track_paused:
-                    sleep(0.1)
-
-        self._track_thread = Process(group=None, target=follow, daemon=True)
-        self._track_thread.start()
-
     def wait_at_crossing(self):
         print('auto an kreuzung erkannt')
         
@@ -74,36 +56,40 @@ class Vorfahrt:
     def run(self):
         # Ein neuer Thread kümmert sich darum, dass das Auto
         # der Linie folgt
-        self.follow_line()
+        # self.follow_line()
+        self._bot.linetracker().autopilot(True)
 
         # Solange wir keine Kreuzungslinie erkannt haben
         # fahren wir weiter
         self._bot.drive_power(self.DEFAULT_POWER)
 
-        while True:
-            # Haben wir ein Auto beim Fahren gesehen?
-            if not self.is_right_free():
-                self.wait_at_crossing()
-                break
+        try:
+            while True:
+                # Haben wir ein Auto beim Fahren gesehen?
+                if not self.is_right_free():
+                    self.wait_at_crossing()
+                    self._bot.drive_power(self.DEFAULT_POWER)
 
-        # Geschwindigkeit verringern
-        # self._bot.drive_power(self.APPROACH_POWER)
-        
-        # Wurde ein Auto während des Annährens an 
-        # die Kreuzung erkannt
-        # car_detected = False
+            # Geschwindigkeit verringern
+            # self._bot.drive_power(self.APPROACH_POWER)
+            
+            # Wurde ein Auto während des Annährens an 
+            # die Kreuzung erkannt
+            # car_detected = False
 
-        # Haben wir ein Auto während des Annährens gesehen?
-        # if car_detected:
-            # Wenn Ja, anhalten
+            # Haben wir ein Auto während des Annährens gesehen?
+            # if car_detected:
+                # Wenn Ja, anhalten
 
-        # Weiterfahren
-        self._bot.drive_power(self.DEFAULT_POWER)
-        self._track_paused = False
+            # Weiterfahren
+            self._bot.drive_power(self.DEFAULT_POWER)
+            self._track_paused = False
 
-        sleep(5)
-
-        self._bot.stop_all()
+            input('stop?')
+        except KeyboardInterrupt:
+            pass
+        finally:
+            self._bot.stop_all()
 
 if __name__ == '__main__':
     Vorfahrt().run()

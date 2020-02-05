@@ -54,7 +54,7 @@ class Vorfahrt:
         print('auto an kreuzung erkannt')
         
         # Line tracking während des Haltens deaktivieren
-        self._track_paused = True
+        self._bot.autopilot().active(False)
         self._bot.drive_power(0)
         self._bot.drive_steer(0)
 
@@ -64,14 +64,14 @@ class Vorfahrt:
         self.wait_till_way_free()
         
         # Line tracking fortsetzen
-        self._track_paused = False
+        self._bot.autopilot().active(True)
         print('kreuzung frei')
 
     def run(self):
         # Ein neuer Thread kümmert sich darum, dass das Auto
         # der Linie folgt
         # self.follow_line()
-        self._bot.linetracker().autopilot(True)
+        self._bot.autopilot().active(True)
 
         # Solange wir keine Kreuzungslinie erkannt haben
         # fahren wir weiter
@@ -97,7 +97,7 @@ class Vorfahrt:
 
             # Weiterfahren
             self._bot.drive_power(self.DEFAULT_POWER)
-            self._track_paused = False
+            self._bot.autopilot().active(True)
 
             input('stop?')
         except KeyboardInterrupt:

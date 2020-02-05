@@ -13,15 +13,23 @@ class Vorfahrt:
     def __init__(self):
         self._bot = Bot()
         self._bot.calibrate()
-        input('start?')
 
     def sensor_in_range(self, sensor, vmin, vmax):
+        # Mehrere Werte des selben Sensors lesen um schlechte Werte auszugleichen.
         vals = [self._bot.sonar().read(sensor) for _ in range(self.COLLECT_TIMES)]
+
+        # `None` repräsentiert einen Lesefehlschlag. Diese Werte müssen ausgenommen werden.
         no_err_vals = list(filter(lambda x: x != None, vals))
+
+        # Durch 0 teilen führt zu fehler. Außerdem wurde kein valider Wert gelesen.
         if 0 == len(no_err_vals):
             return False
+
         median = sum(no_err_vals) / float(len(no_err_vals))
+
         print('sensor', sensor, vals, median)
+
+        # Wenn der ermittelte Durschnitt in der Reichweiter ist -> return True
         return vmin < median < vmax
     
     def is_right_free(self):
@@ -32,16 +40,20 @@ class Vorfahrt:
 
     def wait_till_way_free(self):
         right45, right, left = False, False, False
+        # Führe diese Schleife aus, bis alle Sensoren 'frei' sind
         while not (right45 and right and left):
             print('weg nicht frei', right45, right, left)
+
             right45 = self.is_right_free()
             right = self.is_front_free(Sonar.RIGHT_FRONT)
             left = self.is_front_free(Sonar.LEFT_FRONT)
+
             sleep(0.1)
 
     def wait_at_crossing(self):
         print('auto an kreuzung erkannt')
         
+        # Line tracking während des Haltens deaktivieren
         self._track_paused = True
         self._bot.drive_power(0)
         self._bot.drive_steer(0)
@@ -50,7 +62,9 @@ class Vorfahrt:
 
         # Warten bis die Kreuzung frei ist
         self.wait_till_way_free()
-
+        
+        # Line tracking fortsetzen
+        self._track_paused = False
         print('kreuzung frei')
 
     def run(self):
